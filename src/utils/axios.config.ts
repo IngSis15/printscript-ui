@@ -1,10 +1,10 @@
-import {BACKEND_URL} from "./constants.ts";
-import axios from "axios";
+import { BACKEND_URL } from './constants.ts';
+import axios from 'axios';
 
 const axiosInstance = axios.create({
   baseURL: BACKEND_URL,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
