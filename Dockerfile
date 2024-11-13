@@ -8,7 +8,8 @@ RUN npm install
 
 COPY . .
 
-RUN npm run build
+RUN --mount=type=secret,id=auth0_domain,env=VITE_AUTH0_DOMAIN,required \
+    --mount=type=secret,id=auth0_client_id,env=VITE_AUTH0_CLIENT_ID,required \
 
 FROM nginx:alpine
 

@@ -72,7 +72,7 @@ export class SnippetOperationImpl implements SnippetOperations {
     return Promise.resolve([]);
   }
 
-  async getUserFriends(_name?: string = "", _page?: number, _pageSize?: number): Promise<PaginatedUsers> {
+  async getUserFriends(name?: string, page?: number, pageSize?: number): Promise<PaginatedUsers> {
     try {
       const response = await axiosInstance.get("/permission/users")
       const data = response.data
