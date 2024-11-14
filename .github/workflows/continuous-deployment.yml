@@ -29,7 +29,7 @@ jobs:
 
       - name: Push to GitHub Packages Dev
         if: github.ref == 'refs/heads/dev'
-        id: docker_build
+        id: docker_build_dev
         uses: docker/build-push-action@v4
         with:
           push: true
