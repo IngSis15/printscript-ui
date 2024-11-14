@@ -70,12 +70,12 @@ export class SnippetOperationImpl implements SnippetOperations {
 
   async getTestCases(snippetId: string): Promise<TestCase[]> {
     try {
-      const response = await axiosInstance.get(`/snippet/v1/tests/${snippetId}`)
+      const response = await axiosInstance.get(`/snippet/v1/tests/snippet/${snippetId}`)
 
       return response.data.map((test) => ({
           snippetId: snippetId,
           id: test.id,
-          name: " ",
+          name: test.testName,
           input: test.userInput,
           output: test.expectedOutput
         })
@@ -144,11 +144,12 @@ export class SnippetOperationImpl implements SnippetOperations {
   }
 
   async postTestCase(testCase: Partial<TestCase>): Promise<TestCase> {
+    console.log(testCase)
     try {
       const response = await axiosInstance.post("/snippet/v1/tests", {
         snippetId: testCase.snippetId,
-        expectedOutput: testCase.output,
-        userInput: testCase.input,
+        expectedOutput: testCase.output ?? [],
+        userInput: testCase.input ?? [],
         name: testCase.name,
       })
 
@@ -164,8 +165,13 @@ export class SnippetOperationImpl implements SnippetOperations {
     }
   }
 
-  removeTestCase(_id: string): Promise<string> {
-    throw new Error("Not implemented")
+  async removeTestCase(id: string): Promise<string> {
+    try {
+      await axiosInstance.delete(`/snippet/v1/tests/${id}`)
+      return "Deleted"
+    } catch (e) {
+      throw new Error("Error deleting test")
+    }
   }
 
   async shareSnippet(snippetId: string, userId: string): Promise<Snippet> {
@@ -180,8 +186,15 @@ export class SnippetOperationImpl implements SnippetOperations {
     }
   }
 
-  testSnippet(_testCase: Partial<TestCase>): Promise<TestCaseResult> {
-    throw new Error("Not implemented")
+  async testSnippet(testCase: Partial<TestCase>): Promise<TestCaseResult> {
+    try {
+      const response = await axiosInstance.get(`/snippet/v1/snippet/test/${testCase.id}`)
+      const data = response.data
+
+      return data.passed ? "success" : "fail"
+    } catch (e) {
+      throw new Error("Failed to test snippet")
+    }
   }
 
   async updateSnippetById(id: string, updateSnippet: UpdateSnippet): Promise<Snippet> {
