@@ -68,8 +68,21 @@ export class SnippetOperationImpl implements SnippetOperations {
     }
   }
 
-  getTestCases(): Promise<TestCase[]> {
-    throw new Error("Not implemented")
+  async getTestCases(snippetId: string): Promise<TestCase[]> {
+    try {
+      const response = await axiosInstance.get(`/snippet/v1/tests/snippet/${snippetId}`)
+
+      return response.data.map((test: any) => ({
+          snippetId: snippetId,
+          id: test.id,
+          name: test.testName,
+          input: test.userInput,
+          output: test.expectedOutput
+        })
+      )
+    } catch (e) {
+      throw new Error("Error fetching tests")
+    }
   }
 
   async getUserFriends(_name?: string, _page?: number, _pageSize?: number): Promise<PaginatedUsers> {
@@ -93,7 +106,7 @@ export class SnippetOperationImpl implements SnippetOperations {
 
   async listSnippetDescriptors(page: number, pageSize: number, _snippetName?: string): Promise<PaginatedSnippets> {
     try {
-      const response = await axiosInstance.get("/snippet/v1/snippet", {
+      const response = await axiosInstance.get("/snippet/v1/snippet/user", {
         params: {
           page,
           size: pageSize,
@@ -130,20 +143,58 @@ export class SnippetOperationImpl implements SnippetOperations {
     }
   }
 
-  postTestCase(_testCase: Partial<TestCase>): Promise<TestCase> {
-    throw new Error("Not implemented")
+  async postTestCase(testCase: Partial<TestCase>): Promise<TestCase> {
+    console.log(testCase)
+    try {
+      const response = await axiosInstance.post("/snippet/v1/tests", {
+        snippetId: testCase.snippetId,
+        expectedOutput: testCase.output ?? [],
+        userInput: testCase.input ?? [],
+        name: testCase.name,
+      })
+
+      const data = response.data
+
+      return {
+        id: data.id,
+        output: data.expectedOutput,
+        input: data.userInput
+      } as TestCase
+    } catch (e) {
+      throw new Error("Error posting test")
+    }
   }
 
-  removeTestCase(_id: string): Promise<string> {
-    throw new Error("Not implemented")
+  async removeTestCase(id: string): Promise<string> {
+    try {
+      await axiosInstance.delete(`/snippet/v1/tests/${id}`)
+      return "Deleted"
+    } catch (e) {
+      throw new Error("Error deleting test")
+    }
   }
 
-  shareSnippet(_snippetId: string, _userId: string): Promise<Snippet> {
-    throw new Error("Not implemented")
+  async shareSnippet(snippetId: string, userId: string): Promise<Snippet> {
+    try {
+      await axiosInstance.post(`/permission/permissions/share/${snippetId}`, {
+        userId: userId
+      })
+
+      return {} as Snippet
+    } catch (e) {
+      throw new Error("Failed to share snippet")
+    }
   }
 
-  testSnippet(_testCase: Partial<TestCase>): Promise<TestCaseResult> {
-    throw new Error("Not implemented")
+  async testSnippet(testCase: Partial<TestCase>): Promise<TestCaseResult> {
+    try {
+      const response = await axiosInstance.get(`/snippet/v1/snippet/test/${testCase.id}`)
+      const data = response.data
+
+      return data.passed ? "success" : "fail"
+    } catch (e) {
+      throw new Error("Failed to test snippet")
+    }
   }
 
   async updateSnippetById(id: string, updateSnippet: UpdateSnippet): Promise<Snippet> {
