@@ -169,6 +169,7 @@ export class SnippetOperationImpl implements SnippetOperations {
   }
 
   async shareSnippet(snippetId: string, userId: string): Promise<Snippet> {
+    this.setAuthorizationToken()
     try {
       await axiosInstance.post(`/permission/permissions/share/${snippetId}`, {
         userId: userId

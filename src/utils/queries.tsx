@@ -7,8 +7,8 @@ import {FileType} from "../types/FileType.ts";
 import {Rule} from "../types/Rule.ts";
 import {SnippetOperationImpl} from "./snippetOperationImpl.ts";
 import {useAuth0} from "@auth0/auth0-react";
-import {useEffect} from "react";
 import {setAuthorizationToken} from "./axios.config.ts";
+import {useEffect} from "react";
 
 export const useSnippetsOperations = () => {
   const {getAccessTokenSilently} = useAuth0()
