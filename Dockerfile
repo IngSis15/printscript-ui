@@ -10,12 +10,10 @@ RUN npm install
 # Define build arguments
 ARG VITE_AUTH0_DOMAIN
 ARG VITE_AUTH0_CLIENT_ID
-ARG BACKEND_URL
 
 # Set environment variables from build arguments
 ENV VITE_AUTH0_DOMAIN=$VITE_AUTH0_DOMAIN
 ENV VITE_AUTH0_CLIENT_ID=$VITE_AUTH0_CLIENT_ID
-ENV BACKEND_URL=$BACKEND_URL
 
 # Build the application
 COPY . .

@@ -1,12 +1,14 @@
-import {BACKEND_URL} from "./constants.ts";
 import axios from "axios";
 
+const BASE_URL = `${window.location.protocol}//${window.location.hostname}/api`
+
 const axiosInstance = axios.create({
-  baseURL: BACKEND_URL,
+  baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
+
 
 const setAuthorizationToken = (token: string) => {
   axiosInstance.defaults.headers['Authorization'] = `Bearer ${token}`;
