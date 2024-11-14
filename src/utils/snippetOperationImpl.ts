@@ -72,7 +72,7 @@ export class SnippetOperationImpl implements SnippetOperations {
     try {
       const response = await axiosInstance.get(`/snippet/v1/tests/snippet/${snippetId}`)
 
-      return response.data.map((test) => ({
+      return response.data.map((test: any) => ({
           snippetId: snippetId,
           id: test.id,
           name: test.testName,
