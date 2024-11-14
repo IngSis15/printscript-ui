@@ -26,8 +26,8 @@ export class SnippetOperationImpl implements SnippetOperations {
     return axiosInstance.delete(`/snippet/v1/snippet/${id}`)
   }
 
-  formatSnippet(snippet: string): Promise<string> {
-    return Promise.resolve("");
+  formatSnippet(_snippet: string): Promise<string> {
+    throw new Error("Not implemented")
   }
 
   getFileTypes(): Promise<FileType[]> {
@@ -69,10 +69,10 @@ export class SnippetOperationImpl implements SnippetOperations {
   }
 
   getTestCases(): Promise<TestCase[]> {
-    return Promise.resolve([]);
+    throw new Error("Not implemented")
   }
 
-  async getUserFriends(name?: string, page?: number, pageSize?: number): Promise<PaginatedUsers> {
+  async getUserFriends(_name?: string, _page?: number, _pageSize?: number): Promise<PaginatedUsers> {
     try {
       const response = await axiosInstance.get("/permission/users")
       const data = response.data
@@ -130,20 +130,20 @@ export class SnippetOperationImpl implements SnippetOperations {
     }
   }
 
-  postTestCase(testCase: Partial<TestCase>): Promise<TestCase> {
-    return Promise.resolve(undefined);
+  postTestCase(_testCase: Partial<TestCase>): Promise<TestCase> {
+    throw new Error("Not implemented")
   }
 
-  removeTestCase(id: string): Promise<string> {
-    return Promise.resolve("");
+  removeTestCase(_id: string): Promise<string> {
+    throw new Error("Not implemented")
   }
 
-  shareSnippet(snippetId: string, userId: string): Promise<Snippet> {
-    return Promise.resolve(undefined);
+  shareSnippet(_snippetId: string, _userId: string): Promise<Snippet> {
+    throw new Error("Not implemented")
   }
 
-  testSnippet(testCase: Partial<TestCase>): Promise<TestCaseResult> {
-    return Promise.resolve(undefined);
+  testSnippet(_testCase: Partial<TestCase>): Promise<TestCaseResult> {
+    throw new Error("Not implemented")
   }
 
   async updateSnippetById(id: string, updateSnippet: UpdateSnippet): Promise<Snippet> {
@@ -158,6 +158,7 @@ export class SnippetOperationImpl implements SnippetOperations {
       return response.data as Snippet
     } catch (e) {
       console.error(e)
+      throw new Error("Error updating snippet")
     }
   }
 
