@@ -26,8 +26,13 @@ export class SnippetOperationImpl implements SnippetOperations {
     return axiosInstance.delete(`/snippet/v1/snippet/${id}`)
   }
 
-  formatSnippet(_snippet: string): Promise<string> {
-    throw new Error("Not implemented")
+  async formatSnippet(snippetId: string): Promise<string> {
+    try {
+      const response = await axiosInstance.get(`/snippet/v1/snippet/format/${snippetId}`)
+      return response.data
+    } catch (e) {
+      throw new Error("Format snippet failed");
+    }
   }
 
   getFileTypes(): Promise<FileType[]> {
@@ -198,14 +203,12 @@ export class SnippetOperationImpl implements SnippetOperations {
   }
 
   async updateSnippetById(id: string, updateSnippet: UpdateSnippet): Promise<Snippet> {
-    const body = {
-      ...updateSnippet,
-      description: "",
-      version: "1.1"
-    }
-
     try {
-      const response = await axiosInstance.post(`/snippet/v1/snippet/${id}`, body)
+      const response = await axiosInstance.put(`/snippet/v1/snippet/${id}`, updateSnippet.content, {
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+      })
       return response.data as Snippet
     } catch (e) {
       console.error(e)
