@@ -17,7 +17,6 @@ export const TabPanel = ({value, index, test: initialTest, setTestCase, removeTe
 
     const {mutateAsync: testSnippet, data} = useTestSnippet();
 
-
     return (
         <div
             role="tabpanel"
