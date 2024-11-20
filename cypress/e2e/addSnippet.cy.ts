@@ -9,7 +9,8 @@ describe('Add snippet tests', () => {
   })
   it('Can add snippets manually', () => {
     cy.visit(FRONTEND_URL)
-    cy.wait(10000)
+
+     cy.intercept('GET', BACKEND_URL+'/snippet/v1/snippet/user?page=0&size=10').as('getSnippets');
 
     cy.intercept('POST', BACKEND_URL+"/snippet/v1/snippet", (req) => {
       req.reply((res) => {
@@ -29,12 +30,14 @@ describe('Add snippet tests', () => {
     cy.get('[data-testid="add-snippet-code-editor"]').type(`const snippet: string = "some snippet";\n println(snippet);`);
     cy.get('[data-testid="SaveIcon"]').click();
 
+    cy.wait('@getSnippets')
     cy.wait('@postRequest').its('response.statusCode').should('eq', 201);
   })
 
   it('Can add snippets via file', () => {
     cy.visit(FRONTEND_URL)
-    cy.wait(10000)
+
+    cy.intercept('GET', BACKEND_URL+'/snippet/v1/snippet/user?page=0&size=10').as('getSnippets');
 
     cy.intercept('POST', BACKEND_URL+"/snippet/v1/snippet", (req) => {
       req.reply((res) => {
@@ -48,6 +51,7 @@ describe('Add snippet tests', () => {
 
     cy.get('[data-testid="SaveIcon"]').click();
 
+    cy.wait('@getSnippets')
     cy.wait('@postRequest').its('response.statusCode').should('eq', 201);
   })
 })

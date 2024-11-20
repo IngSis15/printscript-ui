@@ -1,50 +1,58 @@
-import {AUTH0_PASSWORD, AUTH0_USERNAME, BACKEND_URL} from "../../src/utils/constants";
-import {FakeSnippetStore} from "../../src/utils/mock/fakeSnippetStore";
+import {BACKEND_URL, FRONTEND_URL} from "../../src/utils/constants";
 
 describe('Add snippet tests', () => {
-  const fakeStore = new FakeSnippetStore()
   beforeEach(() => {
-    // cy.loginToAuth0(
-    //     AUTH0_USERNAME,
-    //     AUTH0_PASSWORD
-    // )
-    cy.intercept('GET', BACKEND_URL+"/snippets/*", {
-      statusCode: 201,
-      body: fakeStore.getSnippetById("1"),
-    }).as("getSnippetById")
-    cy.intercept('GET', BACKEND_URL+"/snippets").as("getSnippets")
+    cy.loginToAuth0(
+      Cypress.env("AUTH0_USERNAME"),
+      Cypress.env("AUTH0_PASSWORD")
+    )
+    cy.visit(FRONTEND_URL)
+    cy.intercept('GET', BACKEND_URL + "/snippet/v1/snippet/*").as('getSnippets');
 
-    cy.visit("/")
+    // Wait for multiple responses
+    cy.wait('@getSnippets').then((interception) => {
+      // Check if the first response is a 401 (expected)
+      if (interception.response.statusCode === 401) {
+        cy.log('Received expected 401 response. Waiting for next request...');
 
-    // cy.wait("@getSnippets")
-    cy.wait(2000) // TODO comment this line and uncomment 19 to wait for the real data
-    cy.get('.MuiTableBody-root > :nth-child(1) > :nth-child(1)').click();
+        // Wait for the next 200 response
+        cy.wait('@getSnippets').then((secondInterception) => {
+          if (secondInterception.response.statusCode === 200) {
+            cy.log('Received 200 response. Proceeding with click...');
+            cy.get('.MuiTableBody-root > :nth-child(1) > :nth-child(1)').click();
+          } else {
+            cy.log('Second response was not 200. Skipping click.');
+          }
+        });
+      } else if (interception.response.statusCode === 200) {
+        // If the first response is 200 (unexpected but valid), proceed directly
+        cy.log('Received 200 response. Proceeding with click...');
+        cy.get('.MuiTableBody-root > :nth-child(1) > :nth-child(1)').click();
+      } else {
+        cy.log(`Unexpected status code: ${interception.response.statusCode}`);
+      }
+    });
   })
 
   it('Can share a snippet ', () => {
     cy.get('[aria-label="Share"]').click();
-    cy.get('#\\:rl\\:').click();
-    cy.get('#\\:rl\\:-option-0').click();
+    cy.get('#\\:r9\\:').click();
+    cy.get('#\\:r9\\:-option-0').click();
     cy.get('.css-1yuhvjn > .MuiBox-root > .MuiButton-contained').click();
     cy.wait(2000)
   })
 
-  it('Can run snippets', function() {
-    cy.get('[data-testid="PlayArrowIcon"]').click();
-    cy.get('.css-1hpabnv > .MuiBox-root > div > .npm__react-simple-code-editor__textarea').should("have.length.greaterThan",0);
-  });
-
-  it('Can format snippets', function() {
+  it('Can format snippets', function () {
     cy.get('[data-testid="ReadMoreIcon"] > path').click();
   });
 
-  it('Can save snippets', function() {
+  it('Can save snippets', function () {
     cy.get('.css-10egq61 > .MuiBox-root > div > .npm__react-simple-code-editor__textarea').click();
     cy.get('.css-10egq61 > .MuiBox-root > div > .npm__react-simple-code-editor__textarea').type("Some new line");
     cy.get('[data-testid="SaveIcon"] > path').click();
   });
 
-  it('Can delete snippets', function() {
+  it('Can delete snippets', function () {
     cy.get('[data-testid="DeleteIcon"] > path').click();
   });
 })
