@@ -39,7 +39,7 @@ export const Navbar = () => {
                             textDecoration: 'none',
                         }}
                     >
-                        Printscript
+                        LizScript
                     </Typography>
                     <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}, gap: '4px'}}>
                         {pages.map((page) => (
