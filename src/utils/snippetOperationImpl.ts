@@ -100,7 +100,7 @@ export class SnippetOperationImpl implements SnippetOperations {
         page_size: 99,
         count: data.length,
         users: data.map((user: any): User => ({
-          name: user.name,
+          name: user.email,
           id: user.user_id,
         }))
       }
